@@ -6,20 +6,24 @@
 private_key = metadata_any_get_with_default("eydr_private_key", "<ADD TO METADATA>")
 public_key = metadata_any_get_with_default("eydr_public_key", "<ADD TO METADATA>")
 
-file "/home/#{node[:owner_name]}/.ssh/eydr_key" do
+template "/home/#{node[:owner_name]}/.ssh/eydr_key" do
+  source 'ssh_key.erb'
   owner node[:owner_name]
   group node[:owner_name]
   mode 0600
-  action :create
-  content private_key
+  variables({
+    :ssh_key => private_key
+  })
 end
 
-file "/home/#{node[:owner_name]}/.ssh/eydr_key.pub" do
+template "/home/#{node[:owner_name]}/.ssh/eydr_key.pub" do
+  source 'ssh_key.erb'
   owner node[:owner_name]
   group node[:owner_name]
   mode 0600
-  action :create
-  content public_key
+  variables({
+    :ssh_key => public_key
+  })
 end
 
 if node[:engineyard][:environment][:db_stack_name] =~ /postgres/
